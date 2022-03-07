@@ -17,12 +17,72 @@ In this corpus I want to focus on the ecstasy people experience when listening t
 
 Note: I really want to embed the two spotify-playlists here, but still haven't found a way to do it. Tips are welcome :)
 
+
 ### comparing playlists: where to look for similarities?
 
 ```{R}
 
 ```
 ***
+
+
+### chromagrams part one: worship
+
+```{R}
+library(tidyverse)
+library(spotifyr)
+library(compmus)
+
+NIHOT <- get_tidy_audio_analysis("2orHAZyBJH5rbojtwPsztm") %>% select(segments) %>% unnest(segments) %>% select(start, duration, pitches)
+
+NIHOT %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+***
+
+
+### chromagram part two: dance
+
+```{R}
+library(tidyverse)
+library(spotifyr)
+library(compmus)
+
+eightynine <- get_tidy_audio_analysis("1ZuCmG8sXSqgMzpnlOonPv") %>% select(segments) %>% unnest(segments) %>% select(start, duration, pitches)
+
+eightynine %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+*** 
+
 
 ### self-similarity matrices 
 
@@ -59,9 +119,8 @@ bzt %>%
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
   labs(x = "", y = "")
+
 ```
-
-
 
 *** 
 

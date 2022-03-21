@@ -6,8 +6,29 @@ output:
     storyboard: true
 ---
 
+### Homework March 21
 
-### the latest homework updates :)
+```{R}
+library(tidyverse)
+library(compmus)
+library(spotifyr)
+
+fearless <- get_tidy_audio_analysis("5rp9r3rFr45bPTsgi18tQB")
+
+fearless %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+***
+This tempogram came out great, really steady with a straight line at around 120 bpm. I was surprised, because this is a live take on the song, so I think it is neat that the line is straight like this. Not perfect, but clear enough for a live performance. 
+
+
+### keygrams and chordograms
 
 ```{R}
 library(tidyverse)

@@ -11,7 +11,7 @@ output:
 
 I've been raised in a (protestant) christian household, and have gone to churches for as long as i can remember. Sometimes I think I've seen it all, from the traditional 'sit down' churches with the wooden benches and enourmous organs, to the evangelical, almost concert-like, gatherings and everything in between. As you can imagine, music is a big part of almost every sunday-service I've ever attended, each current with its own signature genre. What stands out to me is the way christians experience some kind of ecstasy, especially in the more evangelical part of the church. The music, to me, seems designed for a state of trance and worship, although I could never really say what things specifically contribute to that.
 
-In this corpus I want to focus on the ecstasy people experience when listening to music. Specifically, worship music. I want to compare this to another genre which is generally known for its transcendental tendencies, something people listen to when they want to fall into ecstasy. So, for this comparison I chose dance music. I am aware of the extend of these 2 genres, both worship and dance music contain many subgenres and so many different 'vibes', so I carefully chose 2 playlists (to stay objective, I did not use my own playlist of worship songs, since I did not have such a playlist with dance songs). These playlists both promise in their description to get you in a state of trance, and create an euphoric atmosphere.
+In this corpus I want to focus on the ecstasy people experience when listening to music. Specifically, worship music. I want to compare this to another genre which is generally known for its transcendental tendencies, something people listen to when they want to fall into ecstasy. So, for this comparison I chose dance music. I am aware of the extend of these 2 genres, both worship and dance music contain many subgenres and so many different 'vibes', so I carefully chose 2 playlists (to stay objective, I did not use my own playlist of worship songs, since I did not have such a playlist with dance songs). These playlists both promise in their description to get you in a state of trance, and create an euphoric atmosphere. I wonder if there are some common musical factors able to create such an atmosphere, or if there is nothing to see at all. 
 
 ***
 
@@ -22,6 +22,86 @@ In this corpus I want to focus on the ecstasy people experience when listening t
 
 <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX5pEiFLSS7sX?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
 
+### comparing playlists: energy and valance
+
+```{R}
+
+library(ggplot2)
+library(spotifyr)
+library(tidyverse)
+library(compmus)
+
+worship <- get_playlist_audio_features("", "37i9dQZF1DX5pEiFLSS7sX")
+dance <- get_playlist_audio_features("", "37i9dQZF1DXbtYAdenGE9U")
+
+comparing_playlists <-
+  bind_rows(
+    worship %>% mutate(category = "worship"),
+    dance %>% mutate(category = "dance")
+  )
+comparing_playlists %>%                    
+  mutate(
+    mode = ifelse(mode == 0, "Minor", "Major")
+  ) %>%
+  ggplot(                     
+    aes(
+      x = valence,
+      y = energy,
+      size = loudness,
+      colour = mode
+    )
+  ) +
+  geom_point() +     
+  geom_rug(size = 0.1) +    
+  geom_text(                  
+    aes(
+      x = valence,
+      y = energy,
+      label = label
+    ),
+    data = 
+      tibble(
+        label = c(""),
+        category = c("worship", "dance"),
+        valence = c(0.090, 0.123),
+        energy = c(0.101, 0.967)
+      ),
+    colour = "black",         
+    size = 3,                 
+    hjust = "left",           
+    vjust = "bottom",         
+    nudge_x = -0.05,          
+    nudge_y = 0.02            
+  ) +
+  facet_wrap(~category) +     
+  scale_x_continuous(        
+    limits = c(0, 1),
+    breaks = c(0, 0.50, 1),   
+    minor_breaks = NULL       
+  ) +
+  scale_y_continuous(         
+    limits = c(0, 1),
+    breaks = c(0, 0.50, 1),
+    minor_breaks = NULL
+  ) +
+  scale_colour_brewer(        
+    type = "qual",            
+    palette = "Reds" 
+  ) +
+  scale_size_continuous(      
+    trans = "exp",            
+    guide = "none"            
+  ) +
+  theme_light() +             
+  labs(                       
+    x = "Valence",
+    y = "Energy",
+    colour = "Mode"
+  )
+```
+
+*** 
+There are a lot of things you can conclude only out of these 2 graphs, one of them being the obvious difference in the distribution of energy through the playlists. As you maybe can expect, the energy-levels in the dance-playlist are very high, the lowest still above .5, and everything else just below 1.0. In the worship-playlist 
 
 ### tempogram
 
